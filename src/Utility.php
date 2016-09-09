@@ -125,7 +125,7 @@ class Utility
 	* [Summary].
 	*
 	* [Description]
-
+	*
 	* @param [Type] $[Name] [Argument description]
 	*
 	* @return [type] [name] [description]
@@ -500,6 +500,7 @@ class Utility
 		array_walk($translate, function($v, $k, $p){$GLOBALS["$p$v"] = $_REQUEST[$k] ?? null;}, $p);
 	}
 }
+
 /*
 DEPRECATED METHODS
 
