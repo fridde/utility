@@ -40,9 +40,9 @@ class Utility
 			$criteria = [$criteria];
 		}
 		foreach($criteria as $criterium){
-			$field = $criteria[0] ?? null;
-			$value = $criteria[1] ?? "";
-			$comp_operator = $criteria[2] ?? ($value == "" ? "!=" : "==");
+			$field = $criterium[0] ?? null;
+			$value = $criterium[1] ?? "";
+			$comp_operator = $criterium[2] ?? ($value == "" ? "!=" : "==");
 
 			$array = array_filter($array, $filter_function);
 		}
