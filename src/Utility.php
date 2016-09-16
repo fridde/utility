@@ -7,14 +7,14 @@ class Utility
 	/**
 	* [filterFor description]
 	* @param  Array $array    [description]
-	* @param  array $criteria [description]
+	* @param  array $criteria [$field, $value, $comparison_operator]
 	* @return Array           [description]
 	*/
 	public static function filterFor($array, $criteria = [])
 	{
 		$field = $criteria[0] ?? null;
 		$value = $criteria[1] ?? "";
-		$comp_operator = $criteria[2] ?? "==";
+		$comp_operator = $criteria[2] ?? ($value == "" ? "!=" : "==");
 
 		$filter_function = function($row) use ($field, $value, $comp_operator){
 			$cell = $row[$field];
