@@ -12,10 +12,6 @@ class Utility
 	*/
 	public static function filterFor($array, $criteria = [])
 	{
-		$field = $criteria[0] ?? null;
-		$value = $criteria[1] ?? "";
-		$comp_operator = $criteria[2] ?? ($value == "" ? "!=" : "==");
-
 		$filter_function = function($row) use ($field, $value, $comp_operator){
 			$cell = $row[$field];
 			switch($comp_operator){
@@ -39,12 +35,18 @@ class Utility
 				throw new \Exception("Operator " . $comp_operator . " not defined.");
 			}
 		};
-		if($field){
-			return array_filter($array, $filter_function);
-		} else {
-			throw new \Exception("No field was defined to filter for.");
-		}
 
+		if(count($array) == count($array, COUNT_RECURSIVE)){ // i.e. NOT multidimensional
+			$criteria = [$criteria];
+		}
+		foreach($criteria as $criterium){
+			$field = $criteria[0] ?? null;
+			$value = $criteria[1] ?? "";
+			$comp_operator = $criteria[2] ?? ($value == "" ? "!=" : "==");
+
+			$array = array_filter($array, $filter_function);
+		}
+		return $array;
 	}
 
 	/**
