@@ -10,7 +10,7 @@ class Utility
 	* @param  array $criteria [[$field_1, $value_1, $comparison_operator_1], [$field_2, $value_2, $comparison_operator_2],...] Accepts one-dimensional array, too.
 	* @return Array           [description]
 	*/
-	public static function filterFor($array, $criteria = [])
+	public static function filterFor($array, $criteria = [], $return_single = true)
 	{
 		$only_arrays = count(array_filter($criteria, "is_array"))  == count($criteria);
 		if(!$only_arrays){
@@ -18,6 +18,7 @@ class Utility
 		}
 
 		foreach($criteria as $c){
+			$c = array_map("trim", $c);
 			$crit_length = count($c);
 			if($crit_length === 1){
 				$c = [$c[0], "", "!="];
@@ -55,6 +56,9 @@ class Utility
 				}
 			};
 			$array = array_filter($array, $filter_function);
+		}
+		if($return_single && count($array) === 1){
+			$array = reset($array);
 		}
 		return $array;
 	}
