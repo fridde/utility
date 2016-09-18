@@ -7,43 +7,53 @@ class Utility
 	/**
 	* [filterFor description]
 	* @param  Array $array    [description]
-	* @param  array $criteria [$field, $value, $comparison_operator]
+	* @param  array $criteria [[$field_1, $value_1, $comparison_operator_1], [$field_2, $value_2, $comparison_operator_2],...] Accepts one-dimensional array, too.
 	* @return Array           [description]
 	*/
 	public static function filterFor($array, $criteria = [])
 	{
-		$filter_function = function($row) use ($field, $value, $comp_operator){
-			$cell = $row[$field];
-			switch($comp_operator){
-				case "==":
-				return $cell == $value;
-				break;
-				case "!=":
-				return $cell != $value;
-				break;
-				case ">":
-				return $cell > $value;
-				break;
-				case "<":
-				return $cell < $value;
-				break;
-				case "in":
-				return in_array($needle, $haystack);
-				break;
-
-				default:
-				throw new \Exception("Operator " . $comp_operator . " not defined.");
-			}
-		};
-
-		if(count($array) == count($array, COUNT_RECURSIVE)){ // i.e. NOT multidimensional
+		$only_arrays = count(array_filter($criteria, "is_array"))  == count($criteria);
+		if(!$only_arrays){
 			$criteria = [$criteria];
 		}
-		foreach($criteria as $criterium){
-			$field = $criterium[0] ?? null;
-			$value = $criterium[1] ?? "";
-			$comp_operator = $criterium[2] ?? ($value == "" ? "!=" : "==");
 
+		foreach($criteria as $c){
+			$crit_length = count($c);
+			if($crit_length === 1){
+				$c = [$c[0], "", "!="];
+			} elseif ($crit_length === 2) {
+				$c = [$c[0], $c[1], "=="];
+			} elseif ($crit_length !== 3) {
+				throw new \Exception("Non-valid criterium given: " . var_export($c, true));
+			}
+
+			$filter_function = function($row) use ($c){
+				list($field, $value, $comp_operator) = $c;
+				$cell = $row[$field];
+				switch($comp_operator){
+					case "==":
+					return $cell == $value;
+					break;
+					case "!=":
+					return $cell != $value;
+					break;
+					case ">":
+					return $cell > $value;
+					break;
+					case "<":
+					return $cell < $value;
+					break;
+					case "in":
+					return in_array($cell, $value);
+					break;
+					case "not_in":
+					return !(in_array($cell, $value));
+					break;
+
+					default:
+					throw new \Exception("Operator " . $comp_operator . " not defined.");
+				}
+			};
 			$array = array_filter($array, $filter_function);
 		}
 		return $array;
