@@ -305,6 +305,48 @@ class Utility
 
 		return $returnDates;
 	}
+
+
+	/**
+	* [orderArrayBy description]
+	* @param  [type] $array    [description]
+	* @param  [type] $key      [description]
+	* @param  [type] $callable [description]
+	* @return [type]           [description]
+	*/
+	public static function orderArrayBy($array, $key, $callable = "lexical")
+	{
+		if( ! is_string($callable)){
+			$orderFunction = $callable;
+		} else {
+			$orderFunction = function($a, $b) use ($order, $key)
+			{
+				$a = $a[$key];
+				$b = $b[$key];
+
+				switch($order){
+					case "lexical":
+					return strcmp($a, $b);
+					break;
+
+					case "date":
+					return strtotime($a) - strtotime($b);
+					break;
+
+					case "float":
+					return floatval($a) - floatval($b);
+					break;
+
+					default: // lexical
+					return $$callable($a, $b);
+				}
+			};
+		}
+		usort($array, $orderFunction);
+		return $array;
+	}
+
+
 	/**
 	* SUMMARY OF create_download
 	*
@@ -516,13 +558,13 @@ class Utility
 		array_walk($translate, function($v, $k, $p){$GLOBALS["$p$v"] = $_REQUEST[$k] ?? null;}, $p);
 	}
 
-/**
- * [resolvePath description]
- * @param  [type] $array     [description]
- * @param  string $path      [description]
- * @param  string $delimiter [description]
- * @return [type]            [description]
- */
+	/**
+	* [resolvePath description]
+	* @param  [type] $array     [description]
+	* @param  string $path      [description]
+	* @param  string $delimiter [description]
+	* @return [type]            [description]
+	*/
 	public static function resolvePath($array, $path = "", $delimiter = '/')
 	{
 		$keys = explode($delimiter, $path);
