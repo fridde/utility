@@ -515,6 +515,22 @@ class Utility
 		array_walk($dont_translate, function($v, $k, $p){$GLOBALS["$p$v"] = $_REQUEST[$v] ?? null;}, $p);
 		array_walk($translate, function($v, $k, $p){$GLOBALS["$p$v"] = $_REQUEST[$k] ?? null;}, $p);
 	}
+
+/**
+ * [resolvePath description]
+ * @param  [type] $array     [description]
+ * @param  string $path      [description]
+ * @param  string $delimiter [description]
+ * @return [type]            [description]
+ */
+	public static function resolvePath($array, $path = "", $delimiter = '/')
+	{
+		$keys = explode($delimiter, $path);
+		foreach($keys as $key){
+			$array = &$array[$key];
+		}
+		return $array;
+	}
 }
 
 /*
