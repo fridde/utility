@@ -71,6 +71,23 @@ class Utility
 			return $array;
 		}
 
+		/**
+		 * [getById description]
+		 * @param  [type] $array     [description]
+		 * @param  [type] $id_value  [description]
+		 * @param  string $id_column [description]
+		 * @return [type]            [description]
+		 */
+		public static function getById($array, $id_value, $id_column = "id")
+		{
+			$result = self::filterFor($array, [$id_column, $id_value]);
+			if(empty($result)){
+				return $array[$id_value] ?? false;
+			}
+			return $result;
+		}
+
+
 		public static function arrayIsMulti($array) {
 			foreach ($array as $value) {
 				if (is_array($value)) return true;
