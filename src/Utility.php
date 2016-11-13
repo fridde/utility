@@ -578,7 +578,7 @@ class Utility
 		{
 			$keys = explode($delimiter, $path);
 			foreach($keys as $key){
-				$array = &$array[$key];
+				$array = &$array[$key] ?? false;
 			}
 			return $array;
 		}
