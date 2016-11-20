@@ -19,7 +19,6 @@ class Utility
 		}
 
 		foreach($criteria as $c){
-			$c = array_map("trim", $c);
 			$crit_length = count($c);
 			if($crit_length === 1){
 				$c = [$c[0], "", "!="];
