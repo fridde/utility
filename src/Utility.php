@@ -96,6 +96,16 @@ class Utility
 		}
 
 		/**
+		 * checks if all elements of the array are arrays themselves
+		 * @param  [type] $array [description]
+		 * @return [type]        [description]
+		 */
+		public static function onlyArrays($array)
+		{
+			return count(array_filter($array, "is_array")) === count($array);
+		}
+
+		/**
 		* SUMMARY OF redirect
 		*
 		* DESCRIPTION
