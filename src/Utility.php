@@ -339,7 +339,8 @@ class Utility
 			if( ! is_string($callable)){
 				$orderFunction = $callable;
 			} else {
-				$orderFunction = function($a, $b) use ($callable, $key)
+				$order = $callable;
+				$orderFunction = function($a, $b) use ($order, $key)
 				{
 					$a = $a[$key];
 					$b = $b[$key];
@@ -355,10 +356,7 @@ class Utility
 
 						case "float":
 						return floatval($a) - floatval($b);
-						break;
-
-						default:
-						return $$callable($a, $b);
+						break;						
 					}
 				};
 			}
