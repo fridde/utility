@@ -81,7 +81,9 @@ class Utility
 		{
 			$result = self::filterFor($array, [$id_column, $id_value]);
 			if(empty($result)){
-				return $array[$id_value] ?? false;
+				$e = 'Could not find any entry with the value "';
+				$e .= $id_value . '" in the column "' . $id_column . '".';
+				throw new \Exception($e);
 			}
 			return $result;
 		}
