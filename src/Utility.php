@@ -71,12 +71,12 @@ class Utility
 		}
 
 		/**
-		 * [getById description]
-		 * @param  [type] $array     [description]
-		 * @param  [type] $id_value  [description]
-		 * @param  string $id_column [description]
-		 * @return [type]            [description]
-		 */
+		* [getById description]
+		* @param  [type] $array     [description]
+		* @param  [type] $id_value  [description]
+		* @param  string $id_column [description]
+		* @return [type]            [description]
+		*/
 		public static function getById($array, $id_value, $id_column = "id")
 		{
 			$result = self::filterFor($array, [$id_column, $id_value]);
@@ -97,10 +97,10 @@ class Utility
 		}
 
 		/**
-		 * checks if all elements of the array are arrays themselves
-		 * @param  [type] $array [description]
-		 * @return [type]        [description]
-		 */
+		* checks if all elements of the array are arrays themselves
+		* @param  [type] $array [description]
+		* @return [type]        [description]
+		*/
 		public static function onlyArrays($array)
 		{
 			return count(array_filter($array, "is_array")) === count($array);
@@ -594,8 +594,11 @@ class Utility
 			}
 
 			foreach($keys as $key){
-				$array = &$array[$key] ?? false;
+				$array = &$array[$key];
+
 			}
-			return $array;
+			$value = $array ?? false;
+			return $value;
 		}
+
 	} // END OF CLASS
