@@ -356,7 +356,7 @@ class Utility
 
 						case "float":
 						return floatval($a) - floatval($b);
-						break;						
+						break;
 					}
 				};
 			}
@@ -585,11 +585,17 @@ class Utility
 		*/
 		public static function resolvePath($array, $path = "", $delimiter = '/')
 		{
-			$keys = explode($delimiter, $path);
+			if(is_array($path)){
+				$keys = $path;
+			} elseif(is_string($path)){
+				$keys = explode($delimiter, $path);
+			} else {
+				throw new \Exception("The path parameter has an invalid format. String or array is accepted.");
+			}
+
 			foreach($keys as $key){
 				$array = &$array[$key] ?? false;
 			}
 			return $array;
 		}
-
 	} // END OF CLASS
