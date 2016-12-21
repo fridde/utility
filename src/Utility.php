@@ -613,7 +613,7 @@ class Utility
 				$path = __DIR__ . $path;
 			}
 
-			$files = scandir($path);			
+			$files = scandir($path);
 			$attributes = [];
 			foreach($files as $file_name){
 				if(basename(__FILE__) != $file_name && pathinfo($file_name, PATHINFO_EXTENSION) == "php"){
@@ -642,7 +642,7 @@ class Utility
 
 					$text .=  'public function set' . ucfirst($attribute) . '($';
 					$text .=  $attribute;
-					$text .= '){$this->' . $attribute . ' = '. $attribute . ';}' . PHP_EOL;
+					$text .= '){$this->' . $attribute . ' = $'. $attribute . ';}' . PHP_EOL;
 				}
 			}
 			$text .= $insert_pre ? '</pre>' : '';
