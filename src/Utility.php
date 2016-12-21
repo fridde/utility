@@ -617,7 +617,7 @@ class Utility
 			$attributes = [];
 			foreach($files as $file_name){
 				if(basename(__FILE__) != $file_name && pathinfo($file_name, PATHINFO_EXTENSION) == "php"){
-					$handle = fopen($file_name, "r");
+					$handle = fopen($path . '/' . $file_name, "r");
 					if ($handle) {
 						$class_name = str_replace('.php', '', $file_name);
 						while (($line = fgets($handle)) !== false) {
