@@ -601,4 +601,52 @@ class Utility
 			return $value;
 		}
 
+		/**
+		* [createMethodStubs description]
+		* @param  string $path [description]
+		* @return [type]       [description]
+		*/
+		public static function createMethodStubs($path = "", $format = "html"){
+
+
+			if(empty($path)){
+				$path = __DIR__ . $path;
+			}
+
+			$files = scandir($path);			
+			$attributes = [];
+			foreach($files as $file_name){
+				if(basename(__FILE__) != $file_name && pathinfo($file_name, PATHINFO_EXTENSION) == "php"){
+					$handle = fopen($file_name, "r");
+					if ($handle) {
+						$class_name = str_replace('.php', '', $file_name);
+						while (($line = fgets($handle)) !== false) {
+							$found = preg_match('%^\s*protected\s+\$(\w+);%', $line, $matches);
+							if($found){
+								$attributes[$class_name][] = $matches[1];
+							}
+						}
+						fclose($handle);
+					}
+				}
+			}
+
+			$text = "";
+			$insert_pre = count($attributes !== 0) && $format == "html";
+			$text .= $insert_pre ? '<pre>' : '';
+			foreach($attributes as $class_name => $attributes){
+				$text .=  PHP_EOL . '###' . $class_name . '###' . PHP_EOL;
+				foreach($attributes as $attribute){
+					$text .=  'public function get' . ucfirst($attribute) ;
+					$text .=  '(){return $this->' . $attribute . ';}' . PHP_EOL;
+
+					$text .=  'public function set' . ucfirst($attribute) . '($';
+					$text .=  $attribute;
+					$text .= '){$this->' . $attribute . ' = '. $attribute . ';}' . PHP_EOL;
+				}
+			}
+			$text .= $insert_pre ? '</pre>' : '';
+			echo $text;
+		}
+
 	} // END OF CLASS
