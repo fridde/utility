@@ -644,6 +644,12 @@ class Utility
 					$text .=  $attribute;
 					$text .= '){$this->' . $attribute . ' = $'. $attribute . ';}' . PHP_EOL;
 				}
+				$text .= '/** @PostPersist */' . PHP_EOL;
+				$text .= 'public function postPersist(){ }' . PHP_EOL;
+				$text .= '/** @PostUpdate */' . PHP_EOL;
+				$text .= 'public function postUpdate(){ }' . PHP_EOL;
+				$text .= '/** @PreRemove */' . PHP_EOL;
+				$text .= 'public function preRemove(){ }' . PHP_EOL;
 			}
 			$text .= $insert_pre ? '</pre>' : '';
 			echo $text;
