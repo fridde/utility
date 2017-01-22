@@ -608,15 +608,13 @@ class Utility
 		*/
 		public static function createMethodStubs($path = "", $format = "html"){
 
-
-			if(empty($path)){
-				$path = __DIR__ . $path;
-			}
-
+			$path = empty($path) ? __DIR__ : $path;
 			$files = scandir($path);
 			$attributes = [];
 			foreach($files as $file_name){
-				if(basename(__FILE__) != $file_name && pathinfo($file_name, PATHINFO_EXTENSION) == "php"){
+				$is_not_itself = basename(__FILE__) !== $file_name;
+				$is_php = pathinfo($file_name, PATHINFO_EXTENSION) == "php";
+				if($is_not_itself && $is_php){
 					$handle = fopen($path . '/' . $file_name, "r");
 					if ($handle) {
 						$class_name = str_replace('.php', '', $file_name);
@@ -631,9 +629,8 @@ class Utility
 				}
 			}
 
-			$text = "";
-			$insert_pre = count($attributes !== 0) && $format == "html";
-			$text .= $insert_pre ? '<pre>' : '';
+			$insert_pre = count($attributes) !== 0 && $format == "html";
+			$text = $insert_pre ? '<pre>' : '';
 			foreach($attributes as $class_name => $attributes){
 				$text .=  PHP_EOL . '###' . $class_name . '###' . PHP_EOL;
 				foreach($attributes as $attribute){
@@ -645,11 +642,11 @@ class Utility
 					$text .= '){$this->' . $attribute . ' = $'. $attribute . ';}' . PHP_EOL;
 				}
 				$text .= '/** @PostPersist */' . PHP_EOL;
-				$text .= 'public function postPersist(){ }' . PHP_EOL;
+				$text .= 'public function postPersist(){$this->postUpdate();}' . PHP_EOL;
 				$text .= '/** @PostUpdate */' . PHP_EOL;
-				$text .= 'public function postUpdate(){ }' . PHP_EOL;
+				$text .= 'public function postUpdate(){}' . PHP_EOL;
 				$text .= '/** @PreRemove */' . PHP_EOL;
-				$text .= 'public function preRemove(){ }' . PHP_EOL;
+				$text .= 'public function preRemove(){}' . PHP_EOL;
 			}
 			$text .= $insert_pre ? '</pre>' : '';
 			echo $text;
