@@ -641,15 +641,81 @@ class Utility
 					$text .=  $attribute;
 					$text .= '){$this->' . $attribute . ' = $'. $attribute . ';}' . PHP_EOL;
 				}
-				$text .= '/** @PostPersist */' . PHP_EOL;
-				$text .= 'public function postPersist(){$this->postUpdate();}' . PHP_EOL;
-				$text .= '/** @PostUpdate */' . PHP_EOL;
-				$text .= 'public function postUpdate(){}' . PHP_EOL;
-				$text .= '/** @PreRemove */' . PHP_EOL;
-				$text .= 'public function preRemove(){}' . PHP_EOL;
-			}
-			$text .= $insert_pre ? '</pre>' : '';
-			echo $text;
-		}
+				$text .= '/** @PrePersist */' . PHP_EOL;
+				$text .= 'public function prePersist(){$this->postUpdate();}' . PHP_EOL;
+				$text .= '/** @PreUpdate */' . PHP_EOL;
+				$text .= 'public function preUpdate(){}' . PHP_EOL;
+					$text .= '/** @PreRemove */' . PHP_EOL;
+					$text .= 'public function preRemove(){}' . PHP_EOL;
+					}
+					$text .= $insert_pre ? '</pre>' : '';
+					echo $text;
+				}
 
-	} // END OF CLASS
+				public static function divideDuration($numerator, $denominator)
+				{
+					$num = self::convertDuration($numerator[0], $numerator[1]);
+					$denom = self::convertDuration($denominator[0], $denominator[1]);
+					return floatval($num/$denom);
+				}
+
+				public static function convertDuration($value, $unit, $target_unit = "s")
+				{
+					$to_second = ["ms" => 0.001, "s" => 1, "m" => "60",
+					"h" => 3600, "d" => 86400, "w" => 604800, "y" => 31540000];
+
+					$factor = $to_second[$unit] / $to_second[$target_unit];
+					return floatval($value) * $factor;
+				}
+
+				/**
+				* Will adjust an interval so that it becomes an exact multiple of the divisor interval.
+				* @param  array $input_interval   [description]
+				* @param  array $divisor_interval [description]
+				* @return [type]                   [description]
+				*/
+				public static function adjustInterval($unadjusted_interval, $divisor_interval)
+				{
+					$unadjusted_factor = self::divideDuration($unadjusted_interval, $divisor_interval);
+					$adjusted_factor = self::isBetween($unadjusted_factor, 0, 1) ? 1 : round($unadjusted_factor);
+					$div_value = floatval($divisor_interval[0]);
+					$div_unit = $divisor_interval[1];
+
+					return [$adjusted_factor * $div_value, $div_unit];
+				}
+
+				/**
+				* [isBetween description]
+				* @param  [type]  $val        [description]
+				* @param  [type]  $lower      [description]
+				* @param  [type]  $upper      [description]
+				* @param  string  $comparison One of STRICT_BOTH (default), EQUAL_LOWER, EQUAL_UPPER, EQUAL_BOTH
+				* @return boolean             [description]
+				*/
+				public static function isBetween($val, $lower, $upper, $comparison = "STRICT_BOTH")
+				{
+					switch(strtolower($comparison)){
+						case "strict_both":
+						return $val > $lower && $val < $upper;
+						break;
+
+						case "equal_lower":
+						return $val >= $lower && $val < $upper;
+						break;
+
+						case "equal_upper":
+						return $val > $lower && $val <= $upper;
+						break;
+
+						case "equal_both":
+						return $val >= $lower && $val <= $upper;
+						break;
+
+						default:
+						throw new \Exception('The comparison string "'. $comparison . '" is invalid.');
+						break;
+					}
+
+				}
+
+			} // END OF CLASS
