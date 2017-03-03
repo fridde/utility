@@ -583,7 +583,7 @@ class Utility
 		* @param  string $delimiter [description]
 		* @return [type]            [description]
 		*/
-		public static function resolvePath($array, $path = "", $delimiter = '/')
+		public static function resolve($array, $path = "", $delimiter = '/')
 		{
 			if(is_array($path)){
 				$keys = $path;
@@ -595,9 +595,8 @@ class Utility
 
 			foreach($keys as $key){
 				$array = &$array[$key];
-
 			}
-			$value = $array ?? false;
+			$value = $array ?? null;
 			return $value;
 		}
 
@@ -654,13 +653,14 @@ class Utility
 
 				public static function divideDuration($numerator, $denominator)
 				{
-					$num = self::convertDuration($numerator[0], $numerator[1]);
-					$denom = self::convertDuration($denominator[0], $denominator[1]);
+					$num = self::convertDuration($numerator);
+					$denom = self::convertDuration($denominator);
 					return floatval($num/$denom);
 				}
 
-				public static function convertDuration($value, $unit, $target_unit = "s")
+				public static function convertDuration($value_and_unit, $target_unit = "s")
 				{
+					list($value, $unit) = $value_and_unit;
 					$to_second = ["ms" => 0.001, "s" => 1, "m" => "60",
 					"h" => 3600, "d" => 86400, "w" => 604800, "y" => 31540000];
 
