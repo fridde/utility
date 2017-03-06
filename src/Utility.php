@@ -661,6 +661,9 @@ class Utility
 				public static function convertDuration($value_and_unit, $target_unit = "s")
 				{
 					list($value, $unit) = $value_and_unit;
+					if($unit == $target_unit){
+						return floatval($value);
+					}
 					$to_second = ["ms" => 0.001, "s" => 1, "m" => "60",
 					"h" => 3600, "d" => 86400, "w" => 604800, "y" => 31540000];
 
@@ -716,6 +719,22 @@ class Utility
 						break;
 					}
 
+				}
+
+				public static function addTime($duration, $time_to_be_changed = null)
+				{
+					$t = $time_to_be_changed;
+					if(empty($t)){
+						$t = Carbon::now();
+					}
+					$seconds = self::convertDuration($duration, "s");
+					return $t->addSeconds($seconds);
+				}
+
+				public static function subTime($duration, $time_to_be_changed = null)
+				{
+					$duration[0] =  -1 * floatval($duration[0]);
+					return self::addTime($duration, $time_to_be_changed);
 				}
 
 			} // END OF CLASS
