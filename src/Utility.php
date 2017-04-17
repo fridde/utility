@@ -1,11 +1,18 @@
 <?php
+/**
+* Contains the Utility class.
+*/
 
 namespace Fridde;
 
+/**
+* Contains helpful static functions that are missing from the PHP core.
+*/
 class Utility
 {
 	/**
-	* [filterFor description]
+	* Filter function for arrays.
+	*
 	* @param  Array $array    [description]
 	* @param  array $criteria [[$field_1, $value_1, $comparison_operator_1], [$field_2, $value_2, $comparison_operator_2],...] Accepts one-dimensional array, too.
 	*                         default for just one parameter within $criteria is [$field_1, "", "!="], for two parameters it's [$field_1, $value_1, "="]
@@ -306,7 +313,7 @@ class Utility
 		*
 		* @return TYPE NAME DESCRIPTION
 		*/
-		public static function dateRange($first, $last, $step = "+1 day", $format = "Y-m-d", $addLast = TRUE)
+		public static function dateRange(string $first, string $last, string $step = '+1 day', string $format = "Y-m-d", bool $addLast = TRUE)
 		{
 
 			$step = date_interval_create_from_date_string($step);
@@ -321,7 +328,7 @@ class Utility
 			}
 
 			if ($addLast && end($dates) != $last) {
-				$dates[] = $last -> format($format);
+				$dates[] = $last->format($format);
 			}
 
 			return $dates;
@@ -400,25 +407,11 @@ class Utility
 		*/
 		public static function find_most_similar($needle, $haystack, $alwaysFindSomething = TRUE)
 		{
+			usort($haystack, function($a, $b) use ($needle){
+				return similar_text($needle, $a) - similar_text($needle, $b);
+			});
+			return end($haystack);
 
-			if ($alwaysFindSomething) {
-				$bestWord = reset($haystack);
-				similar_text($needle, $bestWord, $bestPercentage);
-			}
-			else {
-				$bestWord = "";
-				$bestPercentage = 0;
-			}
-
-			foreach ($haystack as $key => $value) {
-				similar_text($needle, $value, $thisPercentage);
-
-				if ($thisPercentage > $bestPercentage) {
-					$bestWord = $value;
-					$bestPercentage = $thisPercentage;
-				}
-			}
-			return $bestWord;
 		}
 		/**
 		* SUMMARY OF logg
@@ -476,23 +469,19 @@ class Utility
 			error_reporting(E_ALL);
 			ini_set('display_errors', 1);
 		}
+
 		/**
-		* SUMMARY OF DMStoDEC
+		* Converts a part of a coordinate from the DMS format into the decimal format.
 		*
-		* DESCRIPTION
+		* @param float $deg Degrees
+		* @param float $min Minutes
+		* @param float $sec Seconds
 		*
-		* @param TYPE ($deg,$min,$sec) ARGDESCRIPTION
-		*
-		* @return TYPE NAME DESCRIPTION
+		* @return float The coordinate in the decimal format
 		*/
-
-		public static function DMStoDEC($deg,$min,$sec)
+		public static function DMStoDEC(float $deg = 0.0, float $min = 0.0, float $sec = 0.0)
 		{
-
-			// Converts DMS ( Degrees / minutes / seconds )
-			// to decimal format longitude / latitude
-
-			return $deg+((($min*60)+($sec))/3600);
+			return $deg + ($min * 60) + ($sec / 3600);
 		}
 		/**
 		* SUMMARY OF DECtoDMS
@@ -504,7 +493,7 @@ class Utility
 		* @return TYPE NAME DESCRIPTION
 		*/
 
-		public static function DECtoDMS($dec)
+		public static function DECtoDMS(float $dec)
 		{
 
 			// Converts decimal longitude / latitude to DMS
@@ -515,15 +504,11 @@ class Utility
 			// point math we extract the integer part and the float
 			// part by using a string function.
 
-			$vars = explode(".",$dec);
-			$deg = $vars[0];
-			$tempma = "0.".$vars[1];
+			$deg = floor($dec);
+			$min = floor(($dec - $deg) * 60.0);
+			$sec = ($dec - $deg - ($min/60.0)) * 3600.0;
 
-			$tempma = $tempma * 3600;
-			$min = floor($tempma / 60);
-			$sec = $tempma - ($min*60);
-
-			return array("deg"=>$deg,"min"=>$min,"sec"=>$sec);
+			return ["deg" => $deg, "min" => $min, "sec" => $sec];
 		}
 
 		/**
@@ -535,7 +520,7 @@ class Utility
 		*
 		* @return TYPE NAME DESCRIPTION
 		*/
-		public static function generateRandomString($length = 10)
+		public static function generateRandomString(int $length = 10)
 		{
 			$characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 			$charactersLength = strlen($characters);
@@ -579,11 +564,11 @@ class Utility
 		/**
 		* [resolvePath description]
 		* @param  [type] $array     [description]
-		* @param  string $path      [description]
+		* @param  string|array $path      [description]
 		* @param  string $delimiter [description]
 		* @return [type]            [description]
 		*/
-		public static function resolve($array, $path = "", $delimiter = '/')
+		public static function resolve(array $array, $path = "", string $delimiter = '/')
 		{
 			if(is_array($path)){
 				$keys = $path;
@@ -605,7 +590,7 @@ class Utility
 		* @param  string $path [description]
 		* @return [type]       [description]
 		*/
-		public static function createMethodStubs($path = "", $format = "html"){
+		public static function createMethodStubs(string $path = "", string $format = "html"){
 
 			$path = empty($path) ? __DIR__ : $path;
 			$files = scandir($path);
@@ -643,98 +628,146 @@ class Utility
 				$text .= '/** @PrePersist */' . PHP_EOL;
 				$text .= 'public function prePersist(){$this->postUpdate();}' . PHP_EOL;
 				$text .= '/** @PreUpdate */' . PHP_EOL;
-				$text .= 'public function preUpdate(){}' . PHP_EOL;
-					$text .= '/** @PreRemove */' . PHP_EOL;
-					$text .= 'public function preRemove(){}' . PHP_EOL;
-					}
-					$text .= $insert_pre ? '</pre>' : '';
-					echo $text;
-				}
+				$text .= 'public function preUpdate(){}' . PHP_EOL; //} Horrible hack to ensure indentation
+				$text .= '/** @PreRemove */' . PHP_EOL;
+				$text .= 'public function preRemove(){}' . PHP_EOL; //} Horrible hack to ensure indentation
+			}
+			$text .= $insert_pre ? '</pre>' : '';
+			echo $text;
+		}
 
-				public static function divideDuration($numerator, $denominator)
-				{
-					$num = self::convertDuration($numerator);
-					$denom = self::convertDuration($denominator);
-					return floatval($num/$denom);
-				}
+		/**
+		* Calculates the quotient of two durations given in the format [value, "unit"]
+		*
+		* @param  array $numerator   The nominator.
+		* @param  array $denominator The denominator.
+		* @return float              The quotient.
+		*/
+		public static function divideDuration(array $numerator, array $denominator)
+		{
+			$num = self::convertDuration($numerator);
+			$denom = self::convertDuration($denominator);
+			return floatval($num/$denom);
+		}
 
-				public static function convertDuration($value_and_unit, $target_unit = "s")
-				{
-					list($value, $unit) = $value_and_unit;
-					if($unit == $target_unit){
-						return floatval($value);
-					}
-					$to_second = ["ms" => 0.001, "s" => 1, "m" => "60",
-					"h" => 3600, "d" => 86400, "w" => 604800, "y" => 31540000];
+		/**
+		*	Converts a time interval to another unit.
+		*
+		*  Possible units are *ms, s, m, h, d, w* and *y*.
+		*
+		* @param  array $value_and_unit An array representing a certain duration.
+		*                               The first element is the value, the second element is the unit as a string.
+		* @param  string $target_unit   The unit to convert to.
+		* @return float                 The value in the new unit, given as float.
+		*/
+		public static function convertDuration(array $value_and_unit, string $target_unit = "s")
+		{
+			list($value, $unit) = $value_and_unit;
+			if($unit == $target_unit){
+				return floatval($value);
+			}
+			$to_second = ["ms" => 0.001, "s" => 1, "m" => "60",
+			"h" => 3600, "d" => 86400, "w" => 604800, "y" => 31540000];
 
-					$factor = $to_second[$unit] / $to_second[$target_unit];
-					return floatval($value) * $factor;
-				}
+			$factor = $to_second[$unit] / $to_second[$target_unit];
+			return floatval($value) * $factor;
+		}
 
-				/**
-				* Will adjust an interval so that it becomes an exact multiple of the divisor interval.
-				* @param  array $input_interval   [description]
-				* @param  array $divisor_interval [description]
-				* @return [type]                   [description]
-				*/
-				public static function adjustInterval($unadjusted_interval, $divisor_interval)
-				{
-					$unadjusted_factor = self::divideDuration($unadjusted_interval, $divisor_interval);
-					$adjusted_factor = self::isBetween($unadjusted_factor, 0, 1) ? 1 : round($unadjusted_factor);
-					$div_value = floatval($divisor_interval[0]);
-					$div_unit = $divisor_interval[1];
+		/**
+		* Will adjust an interval so that it becomes an exact integer multiple of the divisor interval.
+		*
+		* @param array $input_interval   The interval to adjust.
+		* @param array $divisor_interval The interval to adjust to.
+		* @param string $round	The rounding method to us. Can be "up" (uses ceil()),
+		*                      "down" or "nearest" (standard rounding). Case insensitive.
+		* @return array                   The adjusted interval in the form [value, "unit"].
+		*/
+		public static function adjustInterval(array $unadjusted_interval, array $divisor_interval, string $round = "UP")
+		{
+			$unadjusted_factor = self::divideDuration($unadjusted_interval, $divisor_interval);
+			switch(strtolower($round)){
+				case "up":
+				$adjusted_factor = ceil($unadjusted_factor);
+				break;
+				case "down":
+				$adjusted_factor = floor($unadjusted_factor);
+				break;
+				case "nearest":
+				$adjusted_factor = round($adjusted_factor);
+				break;
+			}
+			$div_value = floatval($divisor_interval[0]);
+			$div_unit = $divisor_interval[1];
 
-					return [$adjusted_factor * $div_value, $div_unit];
-				}
+			return [$adjusted_factor * $div_value, $div_unit];
+		}
 
-				/**
-				* [isBetween description]
-				* @param  [type]  $val        [description]
-				* @param  [type]  $lower      [description]
-				* @param  [type]  $upper      [description]
-				* @param  string  $comparison One of STRICT_BOTH (default), EQUAL_LOWER, EQUAL_UPPER, EQUAL_BOTH
-				* @return boolean             [description]
-				*/
-				public static function isBetween($val, $lower, $upper, $comparison = "STRICT_BOTH")
-				{
-					switch(strtolower($comparison)){
-						case "strict_both":
-						return $val > $lower && $val < $upper;
-						break;
+		/**
+		* Checks if a value is between two other values. Allows to specify how the
+		* boundaries should be treated.
+		*
+		* @param  float|integer  $val        The value to check.
+		* @param  float|integer  $lower      The lower boundary
+		* @param  float|integer  $upper      The upper boundary
+		* @param  string  $comparison One of STRICT_BOTH (default), EQUAL_LOWER, EQUAL_UPPER, EQUAL_BOTH
+		* @return boolean             True if the value is between $lower and $upper (using the comparison modifier),
+		*                             false otherwise.
+		*/
+		public static function isBetween(float $val, float $lower, float $upper, string $comparison = "STRICT_BOTH")
+		{
+			switch(strtolower($comparison)){
+				case "strict_both":
+				return $val > $lower && $val < $upper;
+				break;
 
-						case "equal_lower":
-						return $val >= $lower && $val < $upper;
-						break;
+				case "equal_lower":
+				return $val >= $lower && $val < $upper;
+				break;
 
-						case "equal_upper":
-						return $val > $lower && $val <= $upper;
-						break;
+				case "equal_upper":
+				return $val > $lower && $val <= $upper;
+				break;
 
-						case "equal_both":
-						return $val >= $lower && $val <= $upper;
-						break;
+				case "equal_both":
+				return $val >= $lower && $val <= $upper;
+				break;
 
-						default:
-						throw new \Exception('The comparison string "'. $comparison . '" is invalid.');
-						break;
-					}
+				default:
+				throw new \Exception('The comparison string "'. $comparison . '" is invalid.');
+				break;
+			}
 
-				}
+		}
 
-				public static function addTime($duration, $time_to_be_changed = null)
-				{
-					$t = $time_to_be_changed;
-					if(empty($t)){
-						$t = Carbon::now();
-					}
-					$seconds = self::convertDuration($duration, "s");
-					return $t->addSeconds($seconds);
-				}
+		/**
+		* Adds a duration to a DateTime
+		*
+		* @param array $duration Duration of the type [value, "unit"]
+		* @param null|Carbon\Carbon $time_to_be_changed The point in time.
+		*                                               If omitted, the current time is assumed.
+		*
+		* @return Carbon\Carbon The new time after addition.
+		*/
+		public static function addDuration(array $duration, Carbon $time_to_be_changed = null)
+		{
+			$t = $time_to_be_changed ?? Carbon::now();
+			$seconds = self::convertDuration($duration, "s");
+			return $t->addSeconds($seconds);
+		}
 
-				public static function subTime($duration, $time_to_be_changed = null)
-				{
-					$duration[0] =  -1 * floatval($duration[0]);
-					return self::addTime($duration, $time_to_be_changed);
-				}
+		/**
+		* Subtracts a duration from a DateTime
+		*
+		* @param array $duration Duration of the type [value, "unit"]
+		* @param null|Carbon\Carbon $time_to_be_changed The point in time.
+		*                                               If omitted, the current time is assumed.
+		*
+		* @return Carbon\Carbon The new time after subtraction.
+		*/
+		public static function subDuration(array $duration, $time_to_be_changed = null)
+		{
+			$duration[0] =  -1 * floatval($duration[0]);
+			return self::addDuration($duration, $time_to_be_changed);
+		}
 
-			} // END OF CLASS
+	} // END OF CLASS
