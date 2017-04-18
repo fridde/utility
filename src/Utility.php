@@ -5,6 +5,8 @@
 
 namespace Fridde;
 
+use Carbon\Carbon;
+
 /**
 * Contains helpful static functions that are missing from the PHP core.
 */
