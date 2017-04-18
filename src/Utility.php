@@ -772,4 +772,39 @@ class Utility
 			return self::addDuration($duration, $time_to_be_changed);
 		}
 
+		public static function strToNr($word, $as_string = true, $base = "hex") {
+			$base_names = ["dec" => 10, "hex" => 16];
+			$base_nr = $base_names[$base] ?? $base;
+
+			$numbers = [];
+			$letters = preg_split('//u', $word, null, PREG_SPLIT_NO_EMPTY);
+			foreach($letters as $letter){
+				$k = mb_convert_encoding($letter, 'UCS-2LE', 'UTF-8');
+				$k1 = ord(substr($k, 0, 1));
+				$k2 = ord(substr($k, 1, 1));
+				$dec = $k2 * 256 + $k1;
+
+				$numbers[] = base_convert($dec, 10, $base_nr);
+			}
+			if($as_string){
+				$d = strlen(max($numbers));
+				array_walk($numbers, function(&$n) use ($d){
+					$n = str_pad($n, $d, "0", STR_PAD_LEFT);
+				});
+				return implode("", $numbers);
+			}
+			return $numbers;
+		}
+
+		public static function pluck($array, $keys = [])
+		{
+			$return = [];
+			foreach($keys as $key){
+				if(array_key_exists($key, $array)){
+					$return[$key] = $array[$key];
+				}
+			}
+			return $return;
+		}
+
 	} // END OF CLASS
