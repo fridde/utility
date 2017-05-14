@@ -772,7 +772,7 @@ class Utility
 			return self::addDuration($duration, $time_to_be_changed);
 		}
 
-		public static function strToNr($word, $as_string = true, $base = "hex") {
+		public static function strToNr(string $word, bool $as_string = true, $base = "hex") {
 			$base_names = ["dec" => 10, "hex" => 16];
 			$base_nr = $base_names[$base] ?? $base;
 
@@ -796,7 +796,7 @@ class Utility
 			return $numbers;
 		}
 
-		public static function pluck($array, $keys = [])
+		public static function pluck(array $array, array $keys = [])
 		{
 			$return = [];
 			foreach($keys as $key){
@@ -805,6 +805,17 @@ class Utility
 				}
 			}
 			return $return;
+		}
+
+		public static function toCamelCase(string $snake_case_string, bool $ignore_first_letter = false)
+		{
+			$words = explode("_", $snake_case_string);
+			array_walk($words, function(&$word, $i) use ($ignore_first_letter){
+				if($i !== 0 || !$ignore_first_letter){
+					$word = ucfirst($word);
+				}
+			});
+			return implode("", $words);
 		}
 
 	} // END OF CLASS
