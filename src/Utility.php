@@ -389,6 +389,7 @@ class Utility
     }
 
     /**
+     *
      * @param array $array
      * @param int $index
      * @param mixed|null $item
