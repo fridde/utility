@@ -873,6 +873,14 @@ class Utility
         return $numbers;
     }
 
+    /**
+     * Returns a subset of an array selected by the given keys. The array is reordered according to the keys, too.
+     * Works similar to array_intersect_key.
+     *
+     * @param array $array The array to choose from
+     * @param array $keys The keys to compare against, given in the desired order.
+     * @return array
+     */
     public static function pluck(array $array, array $keys = [])
     {
         $return = [];
