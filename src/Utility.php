@@ -400,11 +400,12 @@ class Utility
     {
         $array = array_values($array);
         $array = array_pad($array, $index, null);
-        $initial = array_slice($array, 0, $index -1);
+        $initial = array_slice($array, 0, $index - 1);
         $rest = array_slice($array, $index);
-        if(!is_array($item)){
+        if (!is_array($item)) {
             $item = [$item];
         }
+
         return array_merge($initial, $item, $rest);
     }
 
@@ -914,5 +915,28 @@ class Utility
 
         return implode("", $words);
     }
+
+    public static function stringToInt(string $string, bool $case_sensitive = false, array $extra_letters = ['å', 'ä', 'ö'])
+    {
+
+        $all_letters = array_merge(range("a", "z"), $extra_letters);
+        if ($case_sensitive) {
+            $upper_case = array_map('strtoupper', $all_letters);
+            $all_letters = array_merge($all_letters, $upper_case);
+        }
+        $base = count($all_letters);
+        $id_array = preg_split('//u', $this->getId(), -1, PREG_SPLIT_NO_EMPTY);
+        $int = 0;
+        foreach (array_reverse($id_array) as $exponent => $ch) {
+            if (!$case_sensitive) {
+                $ch = strtolower($ch);
+            }
+            $id = array_search($ch, $all_letters);
+            $int += $id * ($base ** $exponent);
+        }
+
+        return intval($int);
+    }
+
 
 } // END OF CLASS
