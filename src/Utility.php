@@ -919,13 +919,13 @@ class Utility
     public static function stringToInt(string $string, bool $case_sensitive = false, array $extra_letters = ['å', 'ä', 'ö'])
     {
 
-        $all_letters = array_merge(range("a", "z"), $extra_letters);
+        $all_letters = array_merge('', range("a", "z"), $extra_letters);
         if ($case_sensitive) {
             $upper_case = array_map('strtoupper', $all_letters);
             $all_letters = array_merge($all_letters, $upper_case);
         }
         $base = count($all_letters);
-        $id_array = preg_split('//u', $this->getId(), -1, PREG_SPLIT_NO_EMPTY);
+        $id_array = preg_split('//u', $string, -1, PREG_SPLIT_NO_EMPTY);
         $int = 0;
         foreach (array_reverse($id_array) as $exponent => $ch) {
             if (!$case_sensitive) {
@@ -936,6 +936,40 @@ class Utility
         }
 
         return intval($int);
+    }
+
+    function intToString($int, bool $case_sensitive = false, array $extra_letters = ['å', 'ä', 'ö'])
+    {
+        $alphabet = array_merge([''], range('a', 'z'), $extra_letters);
+        if ($case_sensitive) {
+            $upper_case = array_map('strtoupper', $alphabet);
+            $alphabet = array_merge($alphabet, $upper_case);
+        }
+        $base = count($alphabet);
+        $quot = (int) $int;
+        $string = '';
+        while ($quot !== 0) {
+            $remainder = $quot % $base;
+            $letter = $alphabet[$remainder];
+            $string .= $letter;
+            $quot = intdiv($quot, $base);
+        }
+        return strrev($string);
+    }
+
+    public static function hslToRgb($h, $s, $l)
+    {
+        return ColorConverter::hslToRgb($h, $s, $l);
+    }
+
+    public static function rgbToHsl($h, $s, $l)
+    {
+        return ColorConverter::rgbToHsl($r, $g, $b);
+    }
+
+    public static function getGoodBGColors(array $exclude = ['black', 'white'])
+    {
+        return array_diff_key(ColorConverter::KELLY_COLORS, array_flip($exclude));
     }
 
 
