@@ -22,7 +22,7 @@ class Utility
      */
     public static function filterFor($array, $criteria = [], $return_single = true)
     {
-        $only_arrays = count(array_filter($criteria, "is_array")) == count($criteria);
+        $only_arrays = count(array_filter($criteria, 'is_array')) == count($criteria);
         if (!$only_arrays) {
             $criteria = [$criteria];
         }
@@ -30,45 +30,45 @@ class Utility
         foreach ($criteria as $c) {
             $crit_length = count($c);
             if ($crit_length === 1) {
-                $c = [$c[0], "", "!="];
+                $c = [$c[0], '', '!='];
             } elseif ($crit_length === 2) {
-                $c = [$c[0], $c[1], "=="];
+                $c = [$c[0], $c[1], '=='];
             } elseif ($crit_length !== 3) {
-                throw new \Exception("Non-valid criterium given: ".var_export($c, true));
+                throw new \Exception('Non-valid criterium given: '.var_export($c, true));
             }
 
             $filter_function = function ($row) use ($c) {
                 list($field, $value, $comp_operator) = $c;
                 $cell = $row[$field];
                 switch ($comp_operator) {
-                    case "==":
+                    case '==':
                         return $cell == $value;
                         break;
-                    case "!=":
+                    case '!=':
                         return $cell != $value;
                         break;
-                    case ">":
+                    case '>':
                         return $cell > $value;
                         break;
-                    case "<":
+                    case '<':
                         return $cell < $value;
                         break;
-                    case "in":
+                    case 'in':
                         return in_array($cell, $value);
                         break;
-                    case "not_in":
+                    case 'not_in':
                         return !(in_array($cell, $value));
                         break;
-                    case "before":
+                    case 'before':
                         return strtotime($cell) - strtotime($value) < 0;
                         break;
 
-                    case "after":
+                    case 'after':
                         return strtotime($cell) - strtotime($value) > 0;
                         break;
 
                     default:
-                        throw new \Exception("Operator ".$comp_operator." not defined.");
+                        throw new \Exception('Operator '.$comp_operator.' not defined.');
                 }
             };
             $array = array_filter($array, $filter_function);
@@ -87,7 +87,7 @@ class Utility
      * @param  string $id_column [description]
      * @return [type]            [description]
      */
-    public static function getById($array, $id_value, $id_column = "id")
+    public static function getById($array, $id_value, $id_column = 'id')
     {
         $result = self::filterFor($array, [$id_column, $id_value]);
         if (empty($result)) {
@@ -118,7 +118,7 @@ class Utility
      */
     public static function onlyArrays($array)
     {
-        return count(array_filter($array, "is_array")) === count($array);
+        return count(array_filter($array, 'is_array')) === count($array);
     }
 
     /**
@@ -164,8 +164,8 @@ class Utility
             if (!in_array(
                 $entry,
                 array(
-                    ".",
-                    "..",
+                    '.',
+                    '..',
                 )
             )
             ) {
@@ -190,14 +190,14 @@ class Utility
     public static function curPageURL()
     {
         $pageURL = 'http';
-        if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
-            $pageURL .= "s";
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+            $pageURL .= 's';
         }
-        $pageURL .= "://".$_SERVER["SERVER_NAME"];
-        if ($_SERVER["SERVER_PORT"] != "80") {
-            $pageURL .= ":".$_SERVER["SERVER_PORT"];
+        $pageURL .= '://'.$_SERVER['SERVER_NAME'];
+        if ($_SERVER['SERVER_PORT'] != '80') {
+            $pageURL .= ':'.$_SERVER['SERVER_PORT'];
         }
-        $pageURL .= $_SERVER["REQUEST_URI"];
+        $pageURL .= $_SERVER['REQUEST_URI'];
 
         return $pageURL;
     }
@@ -239,12 +239,12 @@ class Utility
         $size = strlen($string);
         $columnIndex = 0;
         $rowIndex = 0;
-        $fieldValue = "";
+        $fieldValue = '';
         $isEnclosured = false;
         for ($i = 0; $i < $size; $i++) {
 
             $char = $string{$i};
-            $addChar = "";
+            $addChar = '';
 
             if ($isEnclosured) {
                 if ($char == $enclosureChar) {
@@ -267,12 +267,12 @@ class Utility
 
                     if ($char == $separatorChar) {
                         $array[$rowIndex][$columnIndex] = $fieldValue;
-                        $fieldValue = "";
+                        $fieldValue = '';
 
                         $columnIndex++;
                     } elseif ($char == $newlineChar) {
                         $array[$rowIndex][$columnIndex] = $fieldValue;
-                        $fieldValue = "";
+                        $fieldValue = '';
                         $columnIndex = 0;
                         $rowIndex++;
                     } else {
@@ -280,7 +280,7 @@ class Utility
                     }
                 }
             }
-            if ($addChar != "") {
+            if ($addChar != '') {
                 $fieldValue .= $addChar;
 
             }
@@ -329,7 +329,7 @@ class Utility
         string $first,
         string $last,
         string $step = '+1 day',
-        string $format = "Y-m-d",
+        string $format = 'Y-m-d',
         bool $addLast = true
     ) {
 
@@ -358,7 +358,7 @@ class Utility
      * @param  [type] $callable [description]
      * @return [type]           [description]
      */
-    public static function orderBy($array, $key, $callable = "lexical")
+    public static function orderBy($array, $key, $callable = 'lexical')
     {
         if (!is_string($callable)) {
             $orderFunction = $callable;
@@ -369,15 +369,15 @@ class Utility
                 $b = $b[$key];
 
                 switch ($order) {
-                    case "lexical":
+                    case 'lexical':
                         return strcmp($a, $b);
                         break;
 
-                    case "datestring":
+                    case 'datestring':
                         return strtotime($a) - strtotime($b);
                         break;
 
-                    case "float":
+                    case 'float':
                         return floatval($a) - floatval($b);
                         break;
                 }
@@ -419,7 +419,7 @@ class Utility
      *
      * @return TYPE NAME DESCRIPTION
      */
-    public static function create_download($source, $filename = "export.csv")
+    public static function create_download($source, $filename = 'export.csv')
     {
 
         $textFromFile = file_get_contents($source);
@@ -466,21 +466,21 @@ class Utility
      * @return TYPE NAME DESCRIPTION
      */
 
-    public static function logg($data, $infoText = "", $file_name = "logg.txt")
+    public static function logg($data, $infoText = '', $file_name = 'logg.txt')
     {
         $debug_info = array_reverse(debug_backtrace());
         $chainFunctions = function ($p, $n) {
-            $class = (isset($n["class"]) ? "(".$n["class"].")" : "");
-            $p .= '->'.$class.$n['function'].":".$n["line"];
+            $class = (isset($n['class']) ? '('.$n['class'].')' : '');
+            $p .= '->'.$class.$n['function'].':'.$n['line'];
 
             return $p;
         };
-        $calling_functions = ltrim(array_reduce($debug_info, $chainFunctions), "->");
-        $file = pathinfo(reset($debug_info)["file"], PATHINFO_BASENAME);
+        $calling_functions = ltrim(array_reduce($debug_info, $chainFunctions), '->');
+        $file = pathinfo(reset($debug_info)['file'], PATHINFO_BASENAME);
 
         $string = "\n\n####\n--------------------------------\n";
-        $string .= date("Y-m-d H:i:s");
-        $string .= ($infoText != "") ? "\n".$infoText : "";
+        $string .= date('Y-m-d H:i:s');
+        $string .= ($infoText != '') ? "\n".$infoText : '';
         $string .= "\n--------------------------------\n";
 
         if (is_string($data)) {
@@ -493,8 +493,8 @@ class Utility
             }
         }
         $string .= "\n----------------------------\n";
-        $string .= "Calling stack: ".$calling_functions."\n";
-        $string .= $file." produced this log entry";
+        $string .= 'Calling stack: '.$calling_functions."\n";
+        $string .= $file.' produced this log entry';
 
         file_put_contents($file_name, $string, FILE_APPEND);
 
@@ -554,7 +554,7 @@ class Utility
         $min = floor(($dec - $deg) * 60.0);
         $sec = ($dec - $deg - ($min / 60.0)) * 3600.0;
 
-        return ["deg" => $deg, "min" => $min, "sec" => $sec];
+        return ['deg' => $deg, 'min' => $min, 'sec' => $sec];
     }
 
     /**
@@ -564,7 +564,7 @@ class Utility
      *
      * @param TYPE ($length = 10) ARGDESCRIPTION
      *
-     * @return TYPE NAME DESCRIPTION
+     * @return string $randomString
      */
     public static function generateRandomString(int $length = 10)
     {
@@ -572,7 +572,7 @@ class Utility
         $charactersLength = strlen($characters);
         $randomString = '';
         foreach (range(0, $length) as $i) {
-            $randomString .= $characters[mt_rand(0, $charactersLength - 1)];
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
         }
 
         return $randomString;
@@ -592,7 +592,7 @@ class Utility
     {
         // arguments: translation_array, prefix
         $args = func_get_args();
-        if (count($args) == 0 || is_null($args[0])) {
+        if (count($args) === 0 || is_null($args[0])) {
             $translation_array = array_keys(
                 $_REQUEST
             ); // i.e. all elements of $_REQUEST are put into the global scope. Use with caution!
@@ -600,9 +600,9 @@ class Utility
             $translation_array = $args[0];
         }
 
-        $p = $args[1] ?? ""; // prefix
+        $p = $args[1] ?? ''; // prefix
 
-        $dont_translate = array_filter($translation_array, "is_numeric", ARRAY_FILTER_USE_KEY);
+        $dont_translate = array_filter($translation_array, 'is_numeric', ARRAY_FILTER_USE_KEY);
 
         $translate = array_diff_assoc($translation_array, $dont_translate);
 
@@ -629,22 +629,21 @@ class Utility
      * @param  string $delimiter [description]
      * @return [type]            [description]
      */
-    public static function resolve(array $array, $path = "", string $delimiter = '/')
+    public static function resolve(array $array, $path = '', string $delimiter = '/')
     {
         if (is_array($path)) {
             $keys = $path;
         } elseif (is_string($path)) {
             $keys = explode($delimiter, $path);
         } else {
-            throw new \Exception("The path parameter has an invalid format. String or array is accepted.");
+            throw new \Exception('The path parameter has an invalid format. String or array is accepted.');
         }
 
         foreach ($keys as $key) {
             $array = &$array[$key];
         }
-        $value = $array ?? null;
 
-        return $value;
+        return ($array ?? null);
     }
 
     /**
@@ -652,17 +651,17 @@ class Utility
      * @param  string $path [description]
      * @return [type]       [description]
      */
-    public static function createMethodStubs(string $path = "", string $format = "html")
+    public static function createMethodStubs(string $path = '', string $format = 'html')
     {
 
         $path = empty($path) ? __DIR__ : $path;
-        $files = scandir($path);
+        $files = scandir($path, SCANDIR_SORT_ASCENDING);
         $attributes = [];
         foreach ($files as $file_name) {
             $is_not_itself = basename(__FILE__) !== $file_name;
-            $is_php = pathinfo($file_name, PATHINFO_EXTENSION) == "php";
+            $is_php = pathinfo($file_name, PATHINFO_EXTENSION) === 'php';
             if ($is_not_itself && $is_php) {
-                $handle = fopen($path.'/'.$file_name, "r");
+                $handle = fopen($path.'/'.$file_name, 'r');
                 if ($handle) {
                     $class_name = str_replace('.php', '', $file_name);
                     while (($line = fgets($handle)) !== false) {
@@ -676,7 +675,7 @@ class Utility
             }
         }
 
-        $insert_pre = count($attributes) !== 0 && $format == "html";
+        $insert_pre = count($attributes) !== 0 && $format === 'html';
         $text = $insert_pre ? '<pre>' : '';
         foreach ($attributes as $class_name => $attributes) {
             $text .= PHP_EOL.'###'.$class_name.'###'.PHP_EOL;
@@ -700,81 +699,6 @@ class Utility
     }
 
     /**
-     * Calculates the quotient of two durations given in the format [value, "unit"]
-     *
-     * @param  array $numerator The nominator.
-     * @param  array $denominator The denominator.
-     * @return float              The quotient.
-     */
-    public static function divideDuration(array $numerator, array $denominator)
-    {
-        $num = self::convertDuration($numerator);
-        $denom = self::convertDuration($denominator);
-
-        return floatval($num / $denom);
-    }
-
-    /**
-     *    Converts a time interval to another unit.
-     *
-     *  Possible units are *ms, s, m, h, d, w* and *y*.
-     *
-     * @param  array $value_and_unit An array representing a certain duration.
-     *                               The first element is the value, the second element is the unit as a string.
-     * @param  string $target_unit The unit to convert to.
-     * @return float                 The value in the new unit, given as float.
-     */
-    public static function convertDuration(array $value_and_unit, string $target_unit = "s")
-    {
-        list($value, $unit) = $value_and_unit;
-        if ($unit == $target_unit) {
-            return floatval($value);
-        }
-        $to_second = [
-            "ms" => 0.001,
-            "s" => 1,
-            "m" => "60",
-            "h" => 3600,
-            "d" => 86400,
-            "w" => 604800,
-            "y" => 31540000,
-        ];
-
-        $factor = $to_second[$unit] / $to_second[$target_unit];
-
-        return floatval($value) * $factor;
-    }
-
-    /**
-     * Will adjust an interval so that it becomes an exact integer multiple of the divisor interval.
-     *
-     * @param array $input_interval The interval to adjust.
-     * @param array $divisor_interval The interval to adjust to.
-     * @param string $round The rounding method to us. Can be "up" (uses ceil()),
-     *                      "down" or "nearest" (standard rounding). Case insensitive.
-     * @return array                   The adjusted interval in the form [value, "unit"].
-     */
-    public static function adjustInterval(array $unadjusted_interval, array $divisor_interval, string $round = "UP")
-    {
-        $unadjusted_factor = self::divideDuration($unadjusted_interval, $divisor_interval);
-        switch (strtolower($round)) {
-            case "up":
-                $adjusted_factor = ceil($unadjusted_factor);
-                break;
-            case "down":
-                $adjusted_factor = floor($unadjusted_factor);
-                break;
-            case "nearest":
-                $adjusted_factor = round($adjusted_factor);
-                break;
-        }
-        $div_value = floatval($divisor_interval[0]);
-        $div_unit = $divisor_interval[1];
-
-        return [$adjusted_factor * $div_value, $div_unit];
-    }
-
-    /**
      * Checks if a value is between two other values. Allows to specify how the
      * boundaries should be treated.
      *
@@ -785,22 +709,22 @@ class Utility
      * @return boolean             True if the value is between $lower and $upper (using the comparison modifier),
      *                             false otherwise.
      */
-    public static function isBetween(float $val, float $lower, float $upper, string $comparison = "STRICT_BOTH")
+    public static function isBetween(float $val, float $lower, float $upper, string $comparison = 'STRICT_BOTH')
     {
         switch (strtolower($comparison)) {
-            case "strict_both":
+            case 'strict_both':
                 return $val > $lower && $val < $upper;
                 break;
 
-            case "equal_lower":
+            case 'equal_lower':
                 return $val >= $lower && $val < $upper;
                 break;
 
-            case "equal_upper":
+            case 'equal_upper':
                 return $val > $lower && $val <= $upper;
                 break;
 
-            case "equal_both":
+            case 'equal_both':
                 return $val >= $lower && $val <= $upper;
                 break;
 
@@ -811,42 +735,9 @@ class Utility
 
     }
 
-    /**
-     * Adds a duration to a DateTime
-     *
-     * @param array $duration Duration of the type [value, "unit"]
-     * @param null|Carbon $time_to_be_changed The point in time.
-     *                                               If omitted, the current time is assumed.
-     *
-     * @return Carbon The new time after addition.
-     */
-    public static function addDuration(array $duration, Carbon $time_to_be_changed = null)
+    public static function strToNr(string $word, bool $as_string = true, $base = 'hex')
     {
-        $t = $time_to_be_changed ?? Carbon::now();
-        $seconds = self::convertDuration($duration, "s");
-
-        return $t->addSeconds($seconds);
-    }
-
-    /**
-     * Subtracts a duration from a DateTime
-     *
-     * @param array $duration Duration of the type [value, "unit"]
-     * @param null|Carbon $time_to_be_changed The point in time.
-     *                                               If omitted, the current time is assumed.
-     *
-     * @return Carbon The new time after subtraction.
-     */
-    public static function subDuration(array $duration, Carbon $time_to_be_changed = null)
-    {
-        $duration[0] = -1 * floatval($duration[0]);
-
-        return self::addDuration($duration, $time_to_be_changed);
-    }
-
-    public static function strToNr(string $word, bool $as_string = true, $base = "hex")
-    {
-        $base_names = ["dec" => 10, "hex" => 16];
+        $base_names = ['dec' => 10, 'hex' => 16];
         $base_nr = $base_names[$base] ?? $base;
 
         $numbers = [];
@@ -864,11 +755,11 @@ class Utility
             array_walk(
                 $numbers,
                 function (&$n) use ($d) {
-                    $n = str_pad($n, $d, "0", STR_PAD_LEFT);
+                    $n = str_pad($n, $d, '0', STR_PAD_LEFT);
                 }
             );
 
-            return implode("", $numbers);
+            return implode('', $numbers);
         }
 
         return $numbers;
@@ -903,7 +794,7 @@ class Utility
      */
     public static function toCamelCase(string $snake_case_string, bool $first_letter_up = false)
     {
-        $words = explode("_", $snake_case_string);
+        $words = explode('_', $snake_case_string);
         array_walk(
             $words,
             function (&$word, $i) use ($first_letter_up) {
@@ -913,13 +804,13 @@ class Utility
             }
         );
 
-        return implode("", $words);
+        return implode('', $words);
     }
 
     public static function stringToInt(string $string, bool $case_sensitive = false, array $extra_letters = ['å', 'ä', 'ö'])
     {
 
-        $all_letters = array_merge('', range("a", "z"), $extra_letters);
+        $all_letters = array_merge('', range('a', 'z'), $extra_letters);
         if ($case_sensitive) {
             $upper_case = array_map('strtoupper', $all_letters);
             $all_letters = array_merge($all_letters, $upper_case);
@@ -931,14 +822,14 @@ class Utility
             if (!$case_sensitive) {
                 $ch = strtolower($ch);
             }
-            $id = array_search($ch, $all_letters);
+            $id = array_search($ch, $all_letters, true);
             $int += $id * ($base ** $exponent);
         }
 
-        return intval($int);
+        return (int) $int;
     }
 
-    function intToString($int, bool $case_sensitive = false, array $extra_letters = ['å', 'ä', 'ö'])
+    public static function intToString($int, bool $case_sensitive = false, array $extra_letters = ['å', 'ä', 'ö'])
     {
         $alphabet = array_merge([''], range('a', 'z'), $extra_letters);
         if ($case_sensitive) {
@@ -962,7 +853,7 @@ class Utility
         return ColorConverter::hslToRgb($h, $s, $l);
     }
 
-    public static function rgbToHsl($h, $s, $l)
+    public static function rgbToHsl($r, $g, $b)
     {
         return ColorConverter::rgbToHsl($r, $g, $b);
     }

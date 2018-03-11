@@ -15,7 +15,7 @@ class Timing
         'h' => 3600,
         'd' => 86400,
         'w' => 604800,
-        'y' => 31540000
+        'y' => 31536000
     ];
 
     public static function toSeconds($value, string $unit = 's')
@@ -38,6 +38,19 @@ class Timing
         $seconds = self::toSeconds(...$duration);
 
         return $t->addSeconds($seconds);
+    }
+
+    public static function subDuration(array $duration, Carbon $time_to_be_changed = null)
+    {
+        $duration[0] = -1.0 * $duration[0];
+
+        return self::addDuration($duration, $time_to_be_changed);
+    }
+
+
+    public static function longerThanSince($duration, Carbon $since)
+    {
+        return Carbon::now()->gte(self::addDuration($duration, $since));
     }
 
 
