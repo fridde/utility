@@ -32,25 +32,39 @@ class Timing
      *
      * @return Carbon The new time after addition.
      */
-    public static function addDuration(array $duration, Carbon $time_to_be_changed = null)
+    public static function addDuration(array $duration, Carbon $time_to_be_changed)
     {
-        $t = $time_to_be_changed ?? Carbon::now();
         $seconds = self::toSeconds(...$duration);
 
-        return $t->addSeconds($seconds);
+        return $time_to_be_changed->addSeconds($seconds);
     }
 
-    public static function subDuration(array $duration, Carbon $time_to_be_changed = null)
+    public static function subDuration(array $duration, Carbon $time_to_be_changed)
     {
         $duration[0] = -1.0 * $duration[0];
 
         return self::addDuration($duration, $time_to_be_changed);
     }
 
+    public static function addDurationToNow(array $duration)
+    {
+        return self::addDuration($duration, Carbon::now());
+    }
 
-    public static function longerThanSince($duration, Carbon $since)
+    public static function subDurationFromNow(array $duration)
+    {
+        return self::subDuration($duration, Carbon::now());
+    }
+
+
+    public static function longerThanSince(array $duration, Carbon $since)
     {
         return Carbon::now()->gte(self::addDuration($duration, $since));
+    }
+
+    public static function multiplyDurationBy(array $duration, float $factor)
+    {
+        return [$factor * $duration[0], $duration[1]];
     }
 
 
