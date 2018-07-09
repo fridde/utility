@@ -32,7 +32,7 @@ class Timing
      *
      * @return Carbon The new time after addition.
      */
-    public static function addDuration(array $duration, Carbon $time_to_be_changed)
+    public static function addDuration(array $duration, Carbon &$time_to_be_changed)
     {
         $seconds = self::toSeconds(...$duration);
 
