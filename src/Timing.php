@@ -46,7 +46,8 @@ class Timing
 
     public static function addDurationToNow(array $duration)
     {
-        return self::addDuration($duration, Carbon::now());
+        $now = Carbon::now();
+        return self::addDuration($duration, $now);
     }
 
     public static function subDurationFromNow(array $duration)
