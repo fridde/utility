@@ -13,12 +13,12 @@ class Timing
         'h' => 3600,
         'd' => 86400,
         'w' => 604800,
-        'y' => 31536000
+        'y' => 31536000,
     ];
 
     public static function toSeconds($value, string $unit = 's')
     {
-        return (float) $value * self::$interval_factors[strtolower($unit)];
+        return (float)$value * self::$interval_factors[strtolower($unit)];
     }
 
     /**
@@ -37,31 +37,34 @@ class Timing
         return $time_to_be_changed->addSeconds($seconds);
     }
 
-    public static function subDuration(array $duration, Carbon $time_to_be_changed)
+    public static function subDuration(array $duration, Carbon &$time_to_be_changed)
     {
-        $duration[0] = -1.0 * $duration[0];
+        $duration = self::multiplyDurationBy($duration, -1.0);
 
         return self::addDuration($duration, $time_to_be_changed);
     }
 
-    public static function addDurationToNow(array $duration)
+    public static function addDurationToNow(array $duration): Carbon
     {
-        $now = Carbon::now();
+        $now = Carbon::now()->copy();
+
         return self::addDuration($duration, $now);
     }
 
-    public static function subDurationFromNow(array $duration)
+    public static function subDurationFromNow(array $duration): Carbon
     {
-        return self::subDuration($duration, Carbon::now());
+        $now = Carbon::now()->copy();
+
+        return self::subDuration($duration, $now);
     }
 
 
-    public static function longerThanSince(array $duration, Carbon $since)
+    public static function longerThanSince(array $duration, Carbon $since): bool
     {
         return Carbon::now()->gte(self::addDuration($duration, $since));
     }
 
-    public static function multiplyDurationBy(array $duration, float $factor)
+    public static function multiplyDurationBy(array $duration, float $factor): array
     {
         return [$factor * $duration[0], $duration[1]];
     }
