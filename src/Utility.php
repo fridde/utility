@@ -812,6 +812,11 @@ class Utility
         return TextConverter::convertToASCII($string);
     }
 
+    public static function replaceNonAlphaNumeric(string $string, string $replacement = '_'): string
+    {
+        return TextConverter::replaceNonAlphaNumeric($string, $replacement);
+    }
+
     public static function stringToInt(string $string, bool $case_sensitive = false, array $extra_letters = ['å', 'ä', 'ö'])
     {
 
