@@ -807,6 +807,11 @@ class Utility
         return implode('', $words);
     }
 
+    public static function convertToAscii(string $string): string
+    {
+        return TextConverter::convertToASCII($string);
+    }
+
     public static function stringToInt(string $string, bool $case_sensitive = false, array $extra_letters = ['å', 'ä', 'ö'])
     {
 
